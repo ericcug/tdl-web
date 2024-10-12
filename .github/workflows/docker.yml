@@ -53,5 +53,5 @@ jobs:
           file: Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64 # Add other architectures as needed
-          tags: ${{ env.REGISTRY }}/ericcug/tv:latest
+          tags: ${{ env.REGISTRY }}/ericcug/tdl-web:latest
           labels: ${{ steps.meta.outputs.labels }}
