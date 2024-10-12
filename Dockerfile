@@ -8,13 +8,13 @@ WORKDIR /app
 COPY package*.json ./
 
 # 安装项目依赖
-RUN npm install --production
+RUN npm install
 
 # 复制项目文件到工作目录
 COPY server.js index.html ./
 
 # 使用更精简的基础镜像作为生产阶段基础镜像
-FROM alpine:latest
+FROM node:alpine AS final
 
 # 设置必要的依赖
 RUN apk add --no-cache wget curl
