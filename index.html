@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDL Downloader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .url-input {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .url-input input {
+            flex-grow: 1;
+            margin-right: 10px;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #output {
+            font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            min-height: 150px;
+            font-size: 18px;
+            line-height: 1.6;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #url-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .url-input {
+            display: flex;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>TDL Downloader</h1>
+
+    <div id="url-container">
+        <div class="first-row">
+            <div class="url-input">
+                <input type="text" placeholder="Enter URL (must start with http)">
+                <button class="sticky-button" onclick="addUrlInput()">+</button>
+            </div>
+
+        </div>
+    </div>
+
+    <button onclick="startDownload()">Download</button>
+
+    <div id="output"></div>
+
+    <script>
+        function addUrlInput () {
+            const currentInput = document.querySelector('.first-row input');
+            const currentValue = currentInput.value;
+            currentInput.value = '';
+
+            const container = document.getElementById('url-container');
+            const newInput = document.createElement('div');
+            newInput.className = 'url-input';
+
+
+            newInput.innerHTML = `
+        <input type="text" value="${currentValue}" placeholder="Enter URL (must start with http)">
+        <button onclick="removeUrlInput(this)">-</button>
+    `;
+
+            // 将新输入框添加到容器的末尾
+            container.appendChild(newInput);
+        }
+
+        function removeUrlInput (button) {
+            button.parentElement.remove();
+        }
+
+        function startDownload () {
+            const urls = Array.from(document.querySelectorAll('.url-input input'))
+                .map(input => input.value.trim())
+                .filter(url => url.startsWith('http'));
+
+            if (urls.length === 0) {
+                alert('Please enter at least one valid URL starting with http');
+                return;
+            }
+
+            fetch('/download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ urls }),
+            })
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data);
+                    document.getElementById('output').textContent = 'Download started. See progress below:\n';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('output').textContent = 'Error starting download';
+                });
+        }
+
+        const ws = new WebSocket(`ws://${window.location.host}`);
+        ws.onmessage = function (event) {
+            const output = document.getElementById('output');
+            output.textContent = event.data; // 只显示最新的消息
+        };
+    </script>
+</body>
+
+</html>
