@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install --production
 
 # 复制项目文件到工作目录
-COPY . .
+COPY server.js index.html ./
 
 # 使用更精简的基础镜像作为生产阶段基础镜像
 FROM alpine:latest
