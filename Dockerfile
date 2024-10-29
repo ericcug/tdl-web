@@ -53,7 +53,7 @@ RUN set -eux; \
 WORKDIR /app
 
 # 暴露应用运行的端口
-EXPOSE 8765
+EXPOSE 3000
 
 # 启动应用
 CMD ["node", "server.js"]
