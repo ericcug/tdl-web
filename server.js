@@ -14,11 +14,11 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-function log (message) {
+const log = (message) => {
     const timestamp = new Date().toISOString();
     console.log(`[${timestamp}] ${message}`);
     return `[${timestamp}] ${message}`;
-}
+};
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
@@ -32,16 +32,12 @@ app.post('/download', (req, res) => {
     }
 
     const downloadDir = '/downloads';
-    const urlArgs = urls.map(url => `-u ${url}`).join(' ');
-
-    const command = `tdl dl -d ${downloadDir} ${urlArgs}`;
+    const command = `tdl dl -d ${downloadDir} ${urls.map(url => `-u ${url}`).join(' ')}`;
     log(`Executing command: ${command}`);
 
     const tdl = spawn('tdl', ['dl', '-d', downloadDir, ...urls.flatMap(url => ['-u', url])]);
 
-    function stripAnsi (str) {
-        return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
-    }
+    const stripAnsi = (str) => str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
 
     let lastProgressLine = '';
 
@@ -64,19 +60,19 @@ app.post('/download', (req, res) => {
     tdl.stderr.on('data', processOutput);
 
     tdl.on('error', (error) => {
-        console.error(`错误: ${error.message}`);
+        console.error(`Error: ${error.message}`);
     });
 
     wss.on('connection', (ws) => {
-        console.log('WebSocket 连接已建立');
+        console.log('WebSocket connection established');
         ws.on('message', (message) => {
-            console.log('收到消息:', message);
+            console.log('Received message:', message);
         });
     });
 
     tdl.on('close', (code) => {
         if (code !== 0) {
-            const logMessage = log(`下载进程异常退出，退出码：${code}`);
+            const logMessage = log(`Download process exited with code: ${code}`);
             wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {
                     client.send(logMessage);

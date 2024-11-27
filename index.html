@@ -67,11 +67,6 @@
             display: flex;
             flex-direction: column;
         }
-
-        .url-input {
-            display: flex;
-            margin-bottom: 10px;
-        }
     </style>
 </head>
 
@@ -79,12 +74,9 @@
     <h1>TDL Downloader</h1>
 
     <div id="url-container">
-        <div class="first-row">
-            <div class="url-input">
-                <input type="text" placeholder="Enter URL (must start with http)">
-                <button class="sticky-button" onclick="addUrlInput()">+</button>
-            </div>
-
+        <div class="url-input">
+            <input type="text" placeholder="Enter URL (must start with http)">
+            <button onclick="addUrlInput()">+</button>
         </div>
     </div>
 
@@ -108,7 +100,6 @@
         <button onclick="removeUrlInput(this)">-</button>
     `;
 
-            // 将新输入框添加到容器的末尾
             container.appendChild(newInput);
         }
 
@@ -145,9 +136,8 @@
         }
 
         const ws = new WebSocket(`ws://${window.location.host}`);
-        ws.onmessage = function (event) {
-            const output = document.getElementById('output');
-            output.textContent = event.data; // 只显示最新的消息
+        ws.onmessage = (event) => {
+            document.getElementById('output').textContent = event.data;
         };
     </script>
 </body>
