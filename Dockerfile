@@ -16,12 +16,13 @@ COPY server.js index.html ./
 # 安装 tdl
 RUN apk add --no-cache curl && \
     set -eux; \
-    if [ -z "$VERSION" ]; then \
-        VERSION=$(curl --silent "https://api.github.com/repos/$OWNER/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'); \
-    fi; \
-    echo "Target version: $VERSION"; \
     OS="Linux"; \
     ARCH="$(uname -m)"; \
+    OWNER="iyear" \
+    REPO="tdl" \
+    LOCATION="/usr/local/bin" \
+    VERSION=$(curl --silent "https://api.github.com/repos/$OWNER/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'); \
+    echo "Target version: $VERSION"; \
     if [ "$ARCH" = "x86_64" ]; then ARCH="64bit"; \
     elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; \
     elif [ "$ARCH" = "armv7l" ]; then ARCH="armv7"; \
