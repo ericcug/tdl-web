@@ -8,3 +8,4 @@ tdl:
     - /mnt/Downloads/tdl:/downloads
     - /data/tdl/config:/root/.tdl
 ```
+scan qrcode login, excute `docker exec -it tdl tdl login -T qr`
